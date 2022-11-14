@@ -6,3 +6,10 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+bytemuck = "1.12.3"
+gl33 = "0.2.1"
+ultraviolet = "0.9.0"
+
+[dev-dependencies]
+glfw = "0.47.0"
+imagine = "0.2.0"
