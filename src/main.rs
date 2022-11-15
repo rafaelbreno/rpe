@@ -70,6 +70,16 @@ fn main() {
         if t > 0.5 {
             t = -0.5;
         }
+        // moving left to right
+        //let uniforms = uniform! {
+            //matrix: [
+                //[1.0, 0.0, 0.0, 0.0],
+                //[0.0, 1.0, 0.0, 0.0],
+                //[0.0, 0.0, 1.0, 0.0],
+                //[t, 0.0, 0.0, 1.0f32],
+            //]
+        //};
+        // rotating
         let uniforms = uniform! {
             matrix: [
                 [t.cos(), t.sin(), 0.0, 0.0],
