@@ -7,5 +7,6 @@ edition = "2021"
 
 [dependencies]
 glium = "*"
+image = "0.24.5"
 
 [dev-dependencies]

@@ -1,7 +1,10 @@
 use glium::Surface;
+use std::io::Cursor;
 
 #[macro_use]
 extern crate glium;
+
+extern crate image;
 
 #[derive(Copy, Clone)]
 struct Vertex {
@@ -13,11 +16,22 @@ implement_vertex!(Vertex, position);
 fn main() {
     use glium::glutin;
 
+    let image = image::load(
+            Cursor::new(&include_bytes!("../teste.png")), 
+            image::ImageFormat::Png,
+        ).unwrap().to_rgb8();
+
+    let image_dimension = image.dimensions();
+    let image = glium::texture::RawImage2d::from_raw_rgba_reversed(&image.into_raw(), image_dimension);
+
+
 
     let mut event_loop = glutin::event_loop::EventLoop::new();
     let wb = glutin::window::WindowBuilder::new();
     let cb = glutin::ContextBuilder::new();
     let display = glium::Display::new(wb, cb, &event_loop).unwrap();
+
+    let texture = glium::texture::SrgbTexture2d::new(&display, image).unwrap();
 
     let vertex1 = Vertex { position: [-0.5, -0.5] };
     let vertex2 = Vertex { position: [0.0, 0.5] };
