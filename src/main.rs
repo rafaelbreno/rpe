@@ -27,26 +27,6 @@ fn main() {
     let normals = glium::VertexBuffer::new(&display, &teapot::NORMALS).unwrap();
     let indices = glium::IndexBuffer::new(&display, glium::index::PrimitiveType::TrianglesList,
                                           &teapot::INDICES).unwrap();
-
-    let vertex1 = Vertex { 
-        position: [-0.5, -0.5],
-        tex_coords: [0.0, 0.0],
-    };
-    let vertex2 = Vertex { 
-        position: [0.0, 0.5],
-        tex_coords: [0.0, 1.0],
-    };
-    let vertex3 = Vertex { 
-        position: [0.5, -0.5],
-        tex_coords: [1.0, 0.0],
-    };
-
-    let shape = vec![vertex1, vertex2, vertex3];
-
-    let vertex_buffer = glium::VertexBuffer::new(&display, &shape).unwrap();
-
-    let indices = glium::index::NoIndices(glium::index::PrimitiveType::TrianglesList);
-
     let vertex_shader_src = r#"
         #version 140
 
@@ -101,13 +81,6 @@ fn main() {
             //],
         //};
 
-        let matrix = [
-                [1.0, 0.0, 0.0, 0.0],
-                [0.0, 1.0, 0.0, 0.0],
-                [0.0, 0.0, 1.0, 0.0],
-                [0.0, 0.0, 0.0, 1.0f32],
-            ];
-
         // moving left to right
         //let uniforms = uniform! {
             //matrix: [
@@ -127,6 +100,13 @@ fn main() {
                 //[0.0, 0.0, 0.0, 1.0f32],
             //]
         //};
+        //
+        let matrix = [
+                [0.01, 0.0, 0.0, 0.0],
+                [0.0, 0.01, 0.0, 0.0],
+                [0.0, 0.0, 0.01, 0.0],
+                [0.0, 0.0, 0.0, 1.0f32],
+        ];
 
         let mut target = display.draw();
         target.clear_color(0.0, 0.0, 1.0, 1.0);
