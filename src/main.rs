@@ -1,5 +1,4 @@
 use glium::Surface;
-use std::io::Cursor;
 
 #[macro_use]
 extern crate glium;
@@ -12,27 +11,22 @@ struct Vertex {
     tex_coords: [f32; 2],
 }
 
+mod teapot;
+
 implement_vertex!(Vertex, position, tex_coords);
 
 fn main() {
     use glium::glutin;
-
-    let image = image::load(
-            Cursor::new(&include_bytes!("../teste.png")), 
-            image::ImageFormat::Png,
-        ).unwrap().to_rgba8();
-
-    let image_dimension = image.dimensions();
-    let image = glium::texture::RawImage2d::from_raw_rgba_reversed(&image.into_raw(), image_dimension);
-
-
 
     let mut event_loop = glutin::event_loop::EventLoop::new();
     let wb = glutin::window::WindowBuilder::new();
     let cb = glutin::ContextBuilder::new();
     let display = glium::Display::new(wb, cb, &event_loop).unwrap();
 
-    let texture = glium::texture::SrgbTexture2d::new(&display, image).unwrap();
+    let positions = glium::VertexBuffer::new(&display, &teapot::VERTICES).unwrap();
+    let normals = glium::VertexBuffer::new(&display, &teapot::NORMALS).unwrap();
+    let indices = glium::IndexBuffer::new(&display, glium::index::PrimitiveType::TrianglesList,
+                                          &teapot::INDICES).unwrap();
 
     let vertex1 = Vertex { 
         position: [-0.5, -0.5],
@@ -56,28 +50,23 @@ fn main() {
     let vertex_shader_src = r#"
         #version 140
 
-        in vec2 position;
-        in vec2 tex_coords;
-        out vec2 v_tex_coords;
+        in vec3 position;
+        in vec3 normal;
 
         uniform mat4 matrix;
 
         void main() {
-            v_tex_coords = tex_coords;
-            gl_Position = matrix * vec4(position, 0.0, 1.0);
+            gl_Position = matrix * vec4(position, 1.0);
         }
     "#;
 
     let fragment_shader_src = r#"
         #version 140
 
-        in vec2 v_tex_coords;
         out vec4 color;
 
-        uniform sampler2D tex;
-
         void main() {
-            color = texture(tex, v_tex_coords);
+            color = vec4(1.0, 0.0, 0.0, 1.0);
         }
     "#;
 
@@ -103,15 +92,21 @@ fn main() {
         }
 
         // static
-        let uniforms = uniform! {
-            matrix: [
+        //let uniforms = uniform! {
+            //matrix: [
+                //[1.0, 0.0, 0.0, 0.0],
+                //[0.0, 1.0, 0.0, 0.0],
+                //[0.0, 0.0, 1.0, 0.0],
+                //[0.0, 0.0, 0.0, 1.0f32],
+            //],
+        //};
+
+        let matrix = [
                 [1.0, 0.0, 0.0, 0.0],
                 [0.0, 1.0, 0.0, 0.0],
                 [0.0, 0.0, 1.0, 0.0],
                 [0.0, 0.0, 0.0, 1.0f32],
-            ],
-            tex: &texture,
-        };
+            ];
 
         // moving left to right
         //let uniforms = uniform! {
@@ -136,10 +131,10 @@ fn main() {
         let mut target = display.draw();
         target.clear_color(0.0, 0.0, 1.0, 1.0);
         target.draw(
-                &vertex_buffer, 
+                (&positions, &normals), 
                 &indices,
                 &program, 
-                &uniforms,
+                &uniform! { matrix: matrix },
                 &Default::default()
             ).unwrap();
         target.finish().unwrap();
